@@ -1,7 +1,46 @@
 function createMedalTable(medals) {
     // Parse the medal data to produce a medaltable
     // The winner gets 3 points, second place 2 points and third place 1 point
-    return
+
+      // Initialize constants
+  const medalTable = {};
+  const scale = [3, 2, 1];
+
+  // Loop through all sports, and for each sport loop through its children
+  const medalsLength = medals.length;
+  for (let i = 0; i < medalsLength; i += 1) {
+    const children = medals[i].podium;
+
+    const childrenLength = children.length;
+
+    for (let j = 0; j < childrenLength; j += 1) {
+      const child = children[j];
+
+      /* 
+        Check if the child matches the pattern "positiveInteger.anyCharacter"
+        or skip to the next child
+        Playground: https://regex101.com/r/hGnipr/1
+      */
+      const matched = child.match(/^\d+[.](.*)/);
+
+      if (!matched) continue;
+
+      /*
+        Exctract the rank and country.
+        Fetch the points from the scale given the ranking
+        Update or initialize the points of the current country in the dictionary table
+      */
+      let [rank, country] = child.split(".");
+      rank = parseInt(rank, 10);
+      const points = scale[rank - 1];
+      const oldPoints = medalTable[country];
+      const newPoints = oldPoints ? oldPoints + points : points;
+
+      medalTable[country] = newPoints;
+    }
+  }
+
+    return medalTable;
 }
 
 describe("Medal Table Generator", () => {
